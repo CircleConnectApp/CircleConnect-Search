@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  user-search-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4005:4005"
+    environment:
+      - PORT=4005
+      - ENVIRONMENT=development
+      - JWT_SECRET=your-secret-key
+      - USER_SERVICE_URL=http://localhost:4001/api
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    restart: always
+    networks:
+      - circle-connect-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - circle-connect-network
+
+volumes:
+  redis-data:
+
+networks:
+  circle-connect-network:
+    driver: bridge 

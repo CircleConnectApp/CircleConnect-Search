@@ -1,6 +1,83 @@
-# CircleConnect Search Service
+# CircleConnect User Search Service
 
-A dedicated Search Service for the CircleConnect platform that enables content search functionality across the entire platform.
+This service provides user search functionality for the CircleConnect platform using Redis for caching.
+
+## Dockerizing the User Search Service
+
+### Prerequisites
+- Docker and Docker Compose
+- Go 1.21+
+
+### Configuration
+
+1. Make sure your Go code connects to Redis using the environment variable:
+
+```go
+// Example Redis connection in your Go code
+func connectToRedis() (*redis.Client, error) {
+    redisURL := os.Getenv("REDIS_URL")
+    if redisURL == "" {
+        redisURL = "redis://localhost:6379"
+    }
+    
+    opt, err := redis.ParseURL(redisURL)
+    if err != nil {
+        return nil, err
+    }
+    
+    client := redis.NewClient(opt)
+    _, err = client.Ping(context.Background()).Result()
+    return client, err
+}
+```
+
+2. Update any hard-coded Redis connection strings to use the environment variable instead.
+
+### Running with Docker
+
+1. Make sure you have the `docker-compose.yml` and `Dockerfile` in your project directory.
+
+2. Build and run the containers:
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+3. To stop the containers:
+```bash
+docker-compose down
+```
+
+### Troubleshooting Redis Connection
+
+If you see the error: `Error connecting to Redis: dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it`, it means:
+
+1. You're trying to connect to Redis on localhost ([::1]:6379) instead of the Redis container
+2. You need to update the connection string to use the environment variable `REDIS_URL`
+
+### Environment Variables
+
+The following environment variables are available:
+- `PORT` - Server port (default: 4005)
+- `ENVIRONMENT` - Runtime environment (development/production)
+- `JWT_SECRET` - Secret key for JWT validation
+- `USER_SERVICE_URL` - User service endpoint URL
+- `REDIS_URL` - Redis connection string
+
+### Testing the Connection
+
+To test if your service can connect to Redis in Docker:
+
+1. Run the service with Docker Compose
+2. Check the logs for any Redis connection errors:
+```bash
+docker-compose logs user-search-service
+```
+
+3. Connect to the Redis container directly:
+```bash
+docker-compose exec redis redis-cli
+```
 
 ## Features
 

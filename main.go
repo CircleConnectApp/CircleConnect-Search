@@ -18,12 +18,33 @@ import (
 var ctx = context.Background()
 
 func main() {
-	// Initialize Redis for caching
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
+	// Load environment variables first
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: Error loading .env file, using default values")
+	}
+
+	// Get Redis URL from environment or use default
+	redisURL := os.Getenv("REDIS_URL")
+	if redisURL == "" {
+		redisURL = "redis://localhost:6379"
+		log.Println("REDIS_URL not set, using default:", redisURL)
+	}
+
+	// Parse Redis URL and connect
+	var client *redis.Client
+
+	opt, err := redis.ParseURL(redisURL)
+	if err != nil {
+		log.Printf("Error parsing Redis URL: %v. Using default connection.", err)
+		// Fallback to direct connection
+		client = redis.NewClient(&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "",
+			DB:       0,
+		})
+	} else {
+		client = redis.NewClient(opt)
+	}
 
 	// Test Redis connection
 	ping, err := client.Ping(ctx).Result()
@@ -35,11 +56,6 @@ func main() {
 
 	// Make Redis client available to controllers
 	controllers.RedisClient = client
-
-	// Load environment variables
-	if err := godotenv.Load(); err != nil {
-		log.Println("Warning: Error loading .env file, using default values")
-	}
 
 	// Get JWT secret
 	jwtSecret := os.Getenv("JWT_SECRET_KEY")
