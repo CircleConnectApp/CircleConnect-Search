@@ -12,6 +12,9 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
+# Fix the health endpoint issue by modifying the routes file directly
+RUN sed -i 's|r.GET("/health", func(c \*gin.Context) {|r.GET("/healthz", func(c \*gin.Context) {|g' routes/search_routes.go
+
 # Build the application with optimizations
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -a -installsuffix cgo -o search-service .
 

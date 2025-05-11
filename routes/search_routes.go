@@ -45,12 +45,4 @@ func SetupRoutes(r *gin.Engine) {
 
 		// Batch operations could be added here
 	}
-
-	// Health check endpoint with a unique path to avoid conflicts
-	r.GET("/healthz", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status":  "ok",
-			"service": "search",
-		})
-	})
 }

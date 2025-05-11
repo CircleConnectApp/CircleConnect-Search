@@ -546,17 +546,22 @@ func createSnippet(content string, query string) string {
 // getCachedResults attempts to retrieve search results from Redis cache
 func getCachedResults(key string) (gin.H, error) {
 	if RedisClient == nil {
+		log.Println("Redis client not available, skipping cache lookup")
 		return nil, fmt.Errorf("Redis client not initialized")
 	}
 
 	ctx := context.Background()
 	cachedData, err := RedisClient.Get(ctx, key).Result()
 	if err != nil {
+		if err != redis.Nil {
+			log.Printf("Redis cache lookup error: %v", err)
+		}
 		return nil, err
 	}
 
 	var results gin.H
 	if err := json.Unmarshal([]byte(cachedData), &results); err != nil {
+		log.Printf("Error unmarshaling cached data: %v", err)
 		return nil, err
 	}
 
@@ -566,6 +571,7 @@ func getCachedResults(key string) (gin.H, error) {
 // cacheResults stores search results in Redis with a TTL
 func cacheResults(key string, results gin.H) {
 	if RedisClient == nil {
+		log.Println("Redis client not available, skipping cache storage")
 		return
 	}
 
