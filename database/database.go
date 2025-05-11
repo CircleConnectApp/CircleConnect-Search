@@ -111,19 +111,3 @@ func getEnv(key, defaultValue string) string {
 	}
 	return value
 }
-
-// InitIndexes initializes MongoDB indexes (mock implementation)
-func InitIndexes() {
-	// Skip in test mode
-	if os.Getenv("SKIP_DB_INIT") == "true" {
-		log.Println("Skipping index initialization (SKIP_DB_INIT=true)")
-		return
-	}
-
-	if MongoDB == nil {
-		log.Println("Warning: MongoDB not initialized, skipping index creation")
-		return
-	}
-
-	log.Println("MongoDB indexes initialized")
-}

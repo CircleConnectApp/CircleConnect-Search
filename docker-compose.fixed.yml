@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   user-search-service:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.fixed
     container_name: user-search-service
     ports:
       - "8084:8084"
@@ -25,7 +23,7 @@ services:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8084/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8084/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -72,7 +70,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=circleConnect
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:

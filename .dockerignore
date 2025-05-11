@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+
+# Binaries and build artifacts
+**/bin/
+**/dist/
+
+# Go specific
+vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Environment and config files
+.env
+*.env
+env.sample
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Docker related
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Redis test directory
+redis-test/
+
+# Documentation
+README.md
+LICENSE 
